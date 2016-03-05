@@ -6,45 +6,34 @@ using System.Threading.Tasks;
 
 namespace NeuralModel {
     class Cell {
-        public NetworkProperties NetworkProps { get; }
         public Dictionary<Signal, double> InputsWithWeights { get; }
-        public IActivationFunction ActivationFunction { get; }
+        public IActivationFunction ActivationFunction { get; set; }
+        public int NumberOfInputs { get; set; }
 
-        public Cell(NetworkProperties networkProps) {
-            NetworkProps = networkProps;
+        public Cell() {
         }
 
-        public Cell(NetworkProperties networkProps, double[] weights) : this(networkProps) {
+        public Cell(double[] weights) {
             SetWeights(weights);
         }
 
         public void SetWeights(double[] weights) {
-            int expectedAmount = NetworkProps.NumberOfInputs;
-            if (weights.Length == expectedAmount) {
-                InputsWithWeights.Clear();
-                foreach (double weight in weights) {
-                    InputsWithWeights.Add(new Signal(), weight);
-                }
-            } else {
-                throw new Exception("There should be " + expectedAmount + " values defined as weights.");
+            InputsWithWeights.Clear();
+            foreach (double weight in weights) {
+                InputsWithWeights.Add(new Signal(), weight);
             }
         }
 
         public void SetInputs(double[] inputs) {
-            int expectedAmount = NetworkProps.NumberOfInputs;
-            if (inputs.Length == expectedAmount) {
+            if (inputs.Length == InputsWithWeights.Count) {
                 int i = 0;
                 foreach (Signal signal in InputsWithWeights.Keys) {
                     signal.SignalValue = inputs[i];
                     i++;
                 }
             } else {
-                throw new Exception("There should be " + expectedAmount + " input values defined.");
+                throw new Exception("There should be " + InputsWithWeights.Count + " input values defined.");
             }
-        }
-
-        public int NumberOfInputs() {
-            return InputsWithWeights.Count;
         }
 
         private double FunctionInput() {
