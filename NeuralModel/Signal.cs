@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace NeuralModel {
     class Signal {
-        public double SignalValue { get { return SignalValue; } set { SignalValue = value; ValueIsSet = true; } }
+        private double signalValue;
         public bool ValueIsSet { get; private set; }
+
+        public double SignalValue {
+            get { return signalValue; }
+            set { signalValue = value; ValueIsSet = true; }
+        }
     }
 }

@@ -7,13 +7,7 @@ using System.Threading.Tasks;
 namespace NeuralModel {
     class Layer {
         public List<Cell> Cells { get; }
-        public int NumberOfInputsPerCell {
-            get { return NumberOfInputsPerCell; }
-            set {
-                NumberOfInputsPerCell = value;
-                Cells.ForEach(cell => cell.NumberOfInputs = value);
-            }
-        }
+        private int numberOfInputsPerCell;
 
         private Random random = new Random();
         private double randomMin = -1;
@@ -52,7 +46,13 @@ namespace NeuralModel {
             });
         }
 
-        public void SetInputs(double[] inputs) {
+        public void SetSingleInputs(double[] inputs) {
+            for (int i = 0; i < inputs.Length; i++) {
+                Cells[i].SetInputs(new double[] { inputs[i] });
+            }
+        }
+
+        public void SetSameInputs(double[] inputs) {
             Cells.ForEach(cell => cell.SetInputs(inputs));
         }
 
@@ -62,6 +62,12 @@ namespace NeuralModel {
                 outputs[i] = Cells[i].Output();
             }
             return outputs;
+        }
+
+        public int NumberOfInputsPerCell {
+            get { return numberOfInputsPerCell; }
+            set { numberOfInputsPerCell = value; Cells.ForEach(cell => cell.NumberOfInputs = value);
+            }
         }
     }
 }

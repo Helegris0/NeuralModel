@@ -45,6 +45,7 @@ namespace NeuralModel {
             for (int i = 1; i < firstLayerWeights.Length; i++) {
                 firstLayerWeights[i] = new double[] { 0 };
             }
+            layers[0].SetWeights(firstLayerWeights);
 
             for (int i = 1; i < layers.Count; i++) {
                 layers[i].SetRandomWeights();
@@ -61,11 +62,11 @@ namespace NeuralModel {
 
         public double[] Outputs(double[] inputs) {
             if (inputs.Length == layers[0].NumberOfCells()) {
-                layers[0].SetInputs(inputs);
+                layers[0].SetSingleInputs(inputs);
                 for (int i = 1; i < layers.Count; i++) {
-                    layers[i].SetInputs(layers[i - 1].Outputs());
+                    layers[i].SetSameInputs(layers[i - 1].Outputs());
                 }
-                return layers[layers.Count].Outputs();
+                return layers[layers.Count - 1].Outputs();
             } else if (layers[0].Cells.Count == 0) {
                 throw new Exception("There are no cells in the first layer.");
             } else {

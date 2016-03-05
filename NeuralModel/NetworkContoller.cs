@@ -2,12 +2,15 @@
 
 namespace NeuralModel {
     internal class NetworkContoller {
+        private double[] input = new double[] { 1, 2, 3, 4 };
         private int layers = 3;
-        private int inputs = 4;
         private int outputs = 4;
 
         internal void Start() {
-            Console.WriteLine(new Network(layers, inputs, outputs).Outputs(new double[] { 3, 3, 3 }));
+            double[] result = new Network(layers, input.Length, outputs).Outputs(input);
+            for (int i = 0; i < result.Length; i++) {
+                Console.WriteLine(result[i]);
+            }
         }
     }
 }

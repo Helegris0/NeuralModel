@@ -11,6 +11,7 @@ namespace NeuralModel {
         public int NumberOfInputs { get; set; }
 
         public Cell() {
+            InputsWithWeights = new Dictionary<Signal, double>();
         }
 
         public Cell(double[] weights) {
@@ -32,7 +33,7 @@ namespace NeuralModel {
                     i++;
                 }
             } else {
-                throw new Exception("There should be " + InputsWithWeights.Count + " input values defined.");
+                throw new Exception("There should be " + InputsWithWeights.Count + " input values defined (instead of "+ inputs.Length + ").");
             }
         }
 
