@@ -45,8 +45,11 @@
   <ItemGroup>
     <Compile Include="Cell.cs" />
     <Compile Include="IActivationFunction.cs" />
+    <Compile Include="IdentityFunction.cs" />
     <Compile Include="Layer.cs" />
+    <Compile Include="LogisticFunction.cs" />
     <Compile Include="Network.cs" />
+    <Compile Include="NetworkContoller.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Signal.cs" />

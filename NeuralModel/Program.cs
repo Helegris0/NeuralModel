@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 namespace NeuralModel {
     class Program {
         static void Main(string[] args) {
+            new NetworkContoller().Start();
+
+            Console.ReadKey();
         }
     }
 }
