@@ -11,11 +11,11 @@ namespace NeuralModel {
         private LogisticFunction() {
         }
 
-        public double DerivateFunctionResult(double value) {
+        public double FunctionResult(double value) {
             return 1 / (1 + Math.Exp(-value));
         }
 
-        public double FunctionResult(double value) {
+        public double DerivateFunctionResult(double value) {
             return value * (1 - value);
         }
 

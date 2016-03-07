@@ -11,11 +11,11 @@ namespace NeuralModel {
         private IdentityFunction() {
         }
 
-        public double DerivateFunctionResult(double value) {
+        public double FunctionResult(double value) {
             return value;
         }
 
-        public double FunctionResult(double value) {
+        public double DerivateFunctionResult(double value) {
             return 1;
         }
 
