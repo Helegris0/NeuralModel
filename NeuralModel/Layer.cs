@@ -5,18 +5,16 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace NeuralModel {
-    class Layer {
-        public List<Cell> Cells { get; }
-        private int numberOfInputsPerCell;
 
-        private Random random = new Random();
-        private double randomMin = -1;
-        private double randomMax = 1;
+    abstract class Layer<T> : ILayer where T : IActivationFunction, new() {
 
-        public Layer(int numberOfCells) {
-            Cells = new List<Cell>();
+        public List<Cell<T>> Cells { get; }
+
+        public Layer(int numberOfCells, int numberOfInputs) {
+            Cells = new List<Cell<T>>();
+
             for (int i = 0; i < numberOfCells; i++) {
-                Cells.Add(new Cell());
+                Cells.Add(new Cell<T>(numberOfInputs));
             }
         }
 
@@ -24,9 +22,7 @@ namespace NeuralModel {
             return Cells.Count;
         }
 
-        public void SetActivationFunctionForAllCells(IActivationFunction function) {
-            Cells.ForEach(cell => cell.ActivationFunction = function);
-        }
+        public abstract void SetDefaultWeights();
 
         public void SetWeights(double[][] weights) {
             for (int i = 0; i < weights.Length; i++) {
@@ -35,39 +31,18 @@ namespace NeuralModel {
             }
         }
 
-        public void SetRandomWeights() {
-            Cells.ForEach(cell => {
-                double[] weightsForCell = new double[cell.NumberOfInputs];
-                for (int i = 0; i < cell.NumberOfInputs; i++) {
-                    double weight = random.NextDouble() * (randomMax - randomMin) + randomMin;
-                    weightsForCell[i] = weight;
-                }
-                cell.SetWeights(weightsForCell);
-            });
-        }
-
-        public void SetSingleInputs(double[] inputs) {
-            for (int i = 0; i < inputs.Length; i++) {
-                Cells[i].SetInputs(new double[] { inputs[i] });
-            }
-        }
-
-        public void SetSameInputs(double[] inputs) {
+        public void SetInputs(double[] inputs) {
             Cells.ForEach(cell => cell.SetInputs(inputs));
         }
 
         public double[] Outputs() {
             double[] outputs = new double[NumberOfCells()];
+
             for (int i = 0; i < NumberOfCells(); i++) {
                 outputs[i] = Cells[i].Output();
             }
-            return outputs;
-        }
 
-        public int NumberOfInputsPerCell {
-            get { return numberOfInputsPerCell; }
-            set { numberOfInputsPerCell = value; Cells.ForEach(cell => cell.NumberOfInputs = value);
-            }
+            return outputs;
         }
     }
 }

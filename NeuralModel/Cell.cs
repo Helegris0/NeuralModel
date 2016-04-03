@@ -5,16 +5,18 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace NeuralModel {
-    class Cell {
-        public Dictionary<Signal, double> InputsWithWeights { get; }
-        public IActivationFunction ActivationFunction { get; set; }
-        public int NumberOfInputs { get; set; }
 
-        public Cell() {
+    class Cell<T> where T : IActivationFunction, new() {
+
+        public Dictionary<Signal, double> InputsWithWeights { get; }
+        public int NumberOfInputs { get; }
+
+        public Cell(int numberOfInputs) {
             InputsWithWeights = new Dictionary<Signal, double>();
+            NumberOfInputs = numberOfInputs;
         }
 
-        public Cell(double[] weights) {
+        public Cell(double[] weights) : this(weights.Length) {
             SetWeights(weights);
         }
 
@@ -28,6 +30,7 @@ namespace NeuralModel {
         public void SetInputs(double[] inputs) {
             if (inputs.Length == InputsWithWeights.Count) {
                 int i = 0;
+
                 foreach (Signal signal in InputsWithWeights.Keys) {
                     signal.SignalValue = inputs[i];
                     i++;
@@ -39,6 +42,7 @@ namespace NeuralModel {
 
         private double FunctionInput() {
             double functionInput = 0;
+
             foreach (var item in InputsWithWeights) {
                 if (item.Key.ValueIsSet) {
                     functionInput += item.Key.SignalValue * item.Value;
@@ -46,11 +50,13 @@ namespace NeuralModel {
                     throw new Exception("Some input value is not set.");
                 }
             }
+
             return functionInput;
         }
 
         public double Output() {
-            return ActivationFunction.FunctionResult(FunctionInput());
+            T function = new T();
+            return function.FunctionResult(FunctionInput());
         }
     }
 }

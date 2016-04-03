@@ -5,69 +5,43 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace NeuralModel {
+
     class Network {
-        private List<Layer> layers;
+
+        private List<ILayer> layers;
         private Random random = new Random();
 
         public Network(int numberOfLayers, int numberOfInputs, int numberOfOutputs) {
-            layers = new List<Layer>();
-            for (int i = 0; i < numberOfLayers; i++) {
-                if (i == 0) {
-                    layers.Add(new Layer(numberOfInputs));
-                } else if (i == numberOfLayers - 1) {
-                    layers.Add(new Layer(numberOfOutputs));
-                } else if (numberOfInputs == numberOfOutputs) {
-                    layers.Add(new Layer(numberOfInputs));
-                } else {
-                    int min = numberOfInputs < numberOfOutputs ? numberOfInputs : numberOfOutputs;
-                    int max = numberOfInputs > numberOfOutputs ? numberOfInputs : numberOfOutputs;
-                    layers.Add(new Layer(random.Next(min, max + 1)));
-                }
-            }
-            SetNumbersOfInputs();
-            DefaultWeightSettings();
-            DefaultFunctionSettings();
-        }
+            layers = new List<ILayer>();
 
-        private void SetNumbersOfInputs() {
-            for (int i = 0; i < layers.Count; i++) {
-                if (i == 0) {
-                    layers[i].NumberOfInputsPerCell = 1;
-                } else {
-                    layers[i].NumberOfInputsPerCell = layers[i - 1].NumberOfCells();
-                }
+            layers.Add(new FirstLayer<IdentityFunction>(numberOfInputs));
+
+            int min = numberOfInputs < numberOfOutputs ? numberOfInputs : numberOfOutputs;
+            int max = numberOfInputs > numberOfOutputs ? numberOfInputs : numberOfOutputs;
+            for (int i = 1; i < numberOfLayers - 1; i++) {
+                int numCells = random.Next(min, max + 1);
+                int numInputs = layers[i - 1].NumberOfCells();
+                layers.Add(new OtherLayer<LogisticFunction>(numCells, numInputs));
             }
+
+            int numInputsLastLayer = layers[numberOfLayers - 2].NumberOfCells();
+            layers.Add(new OtherLayer<LogisticFunction>(numberOfOutputs, numInputsLastLayer));
+
+            DefaultWeightSettings();
         }
 
         private void DefaultWeightSettings() {
-            double[][] firstLayerWeights = new double[layers[0].NumberOfCells()][];
-            firstLayerWeights[0] = new double[] { 1 };
-            for (int i = 1; i < firstLayerWeights.Length; i++) {
-                firstLayerWeights[i] = new double[] { 0 };
-            }
-            layers[0].SetWeights(firstLayerWeights);
-
-            for (int i = 1; i < layers.Count; i++) {
-                layers[i].SetRandomWeights();
-            }
-        }
-
-        private void DefaultFunctionSettings() {
-            layers[0].SetActivationFunctionForAllCells(IdentityFunction.Instance);
-
-            for (int i = 1; i < layers.Count; i++) {
-                layers[i].SetActivationFunctionForAllCells(LogisticFunction.Instance);
-            }
+            layers.ForEach(layer => layer.SetDefaultWeights());
         }
 
         public double[] Outputs(double[] inputs) {
             if (inputs.Length == layers[0].NumberOfCells()) {
-                layers[0].SetSingleInputs(inputs);
+                layers[0].SetInputs(inputs);
                 for (int i = 1; i < layers.Count; i++) {
-                    layers[i].SetSameInputs(layers[i - 1].Outputs());
+                    layers[i].SetInputs(layers[i - 1].Outputs());
                 }
                 return layers[layers.Count - 1].Outputs();
-            } else if (layers[0].Cells.Count == 0) {
+            } else if (layers[0].NumberOfCells() == 0) {
                 throw new Exception("There are no cells in the first layer.");
             } else {
                 throw new Exception(layers[0].NumberOfCells() + " input values should be defined (instead of " + inputs.Length + ")");
